@@ -1,0 +1,26 @@
+<h1>Local machine summary</h1>
+{{#if PCList.length}}
+<table>
+    <tr>
+        <th>IP</th>
+        <th>CPU</th>
+        <th>Memory</th>
+        <th>Domain</th>
+        <th>Kasse</th>
+        <th>Restart</th>
+    </tr>
+    {{#each PCList}}
+    <tr>
+        <td>{{ip}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><form method="POST" action="/restart"><input type="hidden" value="{{_id}}" name="id">
+        <button class="btn">Restart</button></form></td>
+    </tr>
+    {{/each}}
+</table>
+{{else}}
+<h2>No data</h2>
+{{/if}}
