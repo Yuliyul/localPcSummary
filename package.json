@@ -5,21 +5,37 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "package": "pkg package.json -t node10-win-x64 --out-path build && cp ./node_modules/open/xdg-open ./build/xdg-open "
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "axios": "^0.21.1",
         "bowser": "^2.11.0",
         "check-disk-space": "^2.1.0",
         "express": "^4.17.1",
         "express-handlebars": "^5.2.0",
+        "external-ip": "^2.3.1",
         "localtunnel": "^2.0.0",
         "mysql": "^2.18.1",
+        "network-speed": "^2.1.0",
         "open": "^7.3.0",
         "prettysize": "^2.0.0"
     },
     "devDependencies": {
         "nodemon": "^2.0.6"
+    },
+    "bin": "index.js",
+    "pkg": {
+        "assets": [
+            "node_modules/**/*",
+            "modules/**/*",
+            "routes/**/*",
+            "views/**/*"
+        ],
+        "targets": [
+            "node10-win-x64"
+        ]
     }
 }

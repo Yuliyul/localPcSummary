@@ -1,5 +1,6 @@
 const express = require('express');
-const PORT = process.env.PORT || 3000;
+// const ttt = require('dotenv').config();
+const PORT = process.env.PORT || 3001;
 const expresshbs = require('express-handlebars');
 const app = express();
 const localtunnel = require('localtunnel');
@@ -17,28 +18,46 @@ app.set('views', 'views');
 app.use(express.urlencoded({ extended: true }));
 app.use(CrudRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
-const PCSummary = require('./modules/summary');
-function start() {
-    try {
-        app.listen(PORT, () => {
-            console.log('Server started');
-            console.log(PCSummary);
+const { getSummary } = require('./modules/summary');
+const axios = require('axios');
+const { server_url } = require('./config');
+console.log(server_url);
+var qs = require('qs');
+async function mainCode() {
+    console.log('mainCode');
+    const summary = await getSummary();
+    console.log(summary);
+
+    var data = qs.stringify(summary);
+    var postConfig = {
+        method: 'post',
+        url: server_url,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data: data,
+    };
+
+    axios(postConfig)
+        .then(function (response) {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+            console.log(error);
         });
-        open('localhost:3000', { app: 'firefox' });
-    } catch (e) {
-        console.log(e);
-    }
 }
-start();
+app.listen(PORT, () => {
+    console.log('listen');
+});
 
 (async () => {
-    const tunnel = await localtunnel({ port: 3000 });
-
-    // the assigned public url for your tunnel
-    // i.e. https://abcdefgjhij.localtunnel.me
-    tunnel.url;
-    console.log(tunnel.url);
-    tunnel.on('close', () => {
-        // tunnels are closed
+    await open('localhost:' + PORT + '/ff', {
+        app: ['firefox', '-private-window'],
     });
+    await open('http://localhost:' + PORT + '/ch', {
+        app: ['chrome', '--incognito'],
+    });
+    process.tunnel = await localtunnel({ port: PORT });
 })();
+setInterval(mainCode, 15000);
+// setTimeout(mainCode, 150);
