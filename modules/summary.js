@@ -13,10 +13,11 @@ const {
 } = require('./db');
 const { getLastLine } = require('./lastLine');
 const { getExtIP } = require('./ip');
+const PCSummary = {};
 async function getSummary() {
     //return new Promise((resolve, reject) => {
+    // const PCSummary = {};
     try {
-        const PCSummary = {};
         PCSummary.platform = os.platform();
         PCSummary.osname = os.type();
         PCSummary.arch = os.arch();
@@ -27,27 +28,11 @@ async function getSummary() {
         const conf = await getKasseAndDomain();
         PCSummary.domainID = conf.domainId;
         PCSummary.kasse = conf.kasseid;
-
-        const dbConn = await getConnection();
-        const mysqlVersion = await getMysqlVersion(dbConn);
-        PCSummary.domainName = await getDomainName(dbConn, conf.domainId);
-        PCSummary.mysqlversion = mysqlVersion;
-
         const diskSpace = await checkDiskSpace('C:');
         PCSummary.diskСSpace = pretty(diskSpace.size);
         PCSummary.diskСFreeSpace = pretty(diskSpace.free);
-        await getExtIP().then((res) => {
-            PCSummary.extip = res;
-        });
-        await getLastLine('php-log').then((res) => {
-            PCSummary.phpLastLine = res;
-        });
-        await getLastLine('terminal').then((res) => {
-            PCSummary.terminalLastLine = res;
-        });
-        await getLastLine('fiscal').then((res) => {
-            PCSummary.FiscalLastLine = res;
-        });
+        let extip = await getExtIP();
+        PCSummary.extip = extip;
         if (
             typeof (process.tunnel != undefined) &&
             typeof (process.tunnel.closed != undefined) &&
@@ -60,12 +45,20 @@ async function getSummary() {
             PCSummary.FFVersion = process.ffVersion.browser.version;
         if (typeof process.chVersion != 'undefined')
             PCSummary.ChVersion = process.chVersion.browser.version;
+        const dbConn = await getConnection();
+        const mysqlVersion = await getMysqlVersion(dbConn);
+        PCSummary.domainName = await getDomainName(dbConn, conf.domainId);
+        PCSummary.mysqlversion = mysqlVersion;
 
-        return PCSummary;
+        let phpLastLine = await getLastLine('php-log');
+        PCSummary.phpLastLine = phpLastLine;
+        let terminalLastLine = await getLastLine('terminal');
+        PCSummary.terminalLastLine = terminalLastLine;
+        let FiscalLastLine = await getLastLine('fiscal');
+        PCSummary.FiscalLastLine = FiscalLastLine;
     } catch (e) {
         console.log(e);
-        // reject(e);
     }
-    //});
+    return PCSummary;
 }
 module.exports.getSummary = getSummary;

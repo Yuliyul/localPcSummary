@@ -37,14 +37,12 @@ async function mainCode() {
         },
         data: data,
     };
-
-    axios(postConfig)
-        .then(function (response) {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    try {
+        let response = await axios(postConfig);
+        console.log(JSON.stringify(response.data));
+    } catch (err) {
+        console.log(err);
+    }
 }
 app.listen(PORT, () => {
     console.log('listen');
@@ -60,4 +58,3 @@ app.listen(PORT, () => {
     process.tunnel = await localtunnel({ port: PORT });
 })();
 setInterval(mainCode, 15000);
-// setTimeout(mainCode, 150);
