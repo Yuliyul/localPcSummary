@@ -2,9 +2,8 @@ const localtunnel = require('localtunnel');
 const os = require('os');
 const checkDiskSpace = require('check-disk-space');
 const pretty = require('prettysize');
-const NetworkSpeed = require('network-speed'); // ES5
-const testNetworkSpeed = new NetworkSpeed();
 
+const si = require('systeminformation');
 const {
     getConnection,
     getMysqlVersion,
@@ -13,6 +12,7 @@ const {
 } = require('./db');
 const { getLastLine } = require('./lastLine');
 const { getExtIP } = require('./ip');
+const { getNetworkDownloadSpeed, getNetworkUploadSpeed } = require('./speed');
 const PCSummary = {};
 async function getSummary() {
     //return new Promise((resolve, reject) => {
@@ -25,14 +25,16 @@ async function getSummary() {
         PCSummary.freesysmem = pretty(os.freemem());
         PCSummary.totalmem = pretty(os.totalmem());
         PCSummary.cpu = os.cpus()[0].model;
-        const conf = await getKasseAndDomain();
-        PCSummary.domainID = conf.domainId;
-        PCSummary.kasse = conf.kasseid;
+
         const diskSpace = await checkDiskSpace('C:');
         PCSummary.diskСSpace = pretty(diskSpace.size);
         PCSummary.diskСFreeSpace = pretty(diskSpace.free);
         let extip = await getExtIP();
         PCSummary.extip = extip;
+        let uploadSpeed = await getNetworkUploadSpeed();
+        PCSummary.uploadSpeed = uploadSpeed;
+        let downSpeed = await getNetworkDownloadSpeed();
+        PCSummary.downSpeed = downSpeed;
         if (
             typeof (process.tunnel != undefined) &&
             typeof (process.tunnel.closed != undefined) &&
@@ -45,6 +47,14 @@ async function getSummary() {
             PCSummary.FFVersion = process.ffVersion.browser.version;
         if (typeof process.chVersion != 'undefined')
             PCSummary.ChVersion = process.chVersion.browser.version;
+        let printers = await si.printer();
+        let defaultPrinter = printers.filter(
+            (printer) => printer.default == true
+        );
+        PCSummary.printer = defaultPrinter;
+        const conf = await getKasseAndDomain();
+        PCSummary.domainID = conf.domainId;
+        PCSummary.kasse = conf.kasseid;
         const dbConn = await getConnection();
         const mysqlVersion = await getMysqlVersion(dbConn);
         PCSummary.domainName = await getDomainName(dbConn, conf.domainId);

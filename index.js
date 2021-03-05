@@ -21,10 +21,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const { getSummary } = require('./modules/summary');
 const axios = require('axios');
 const { server_url } = require('./config');
-console.log(server_url);
 var qs = require('qs');
 async function mainCode() {
-    console.log('mainCode');
     const summary = await getSummary();
     console.log(summary);
 

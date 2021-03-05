@@ -12,8 +12,8 @@ const app_path = 'D:\\htdocs\\offline';
 const terminal_log = app_path + '\\zvt\\zvt.log';
 const fiscal_log = app_path + '\\tse\\SWISS_TELENORMA_SW\\JavaBridge.log';
 const local_conf = app_path + '\\localConfig.conf';
-// const server_url = 'http://localhost:8000/add';
-const server_url = 'https://khazran-test-server.herokuapp.com/add';
+const server_url = 'http://localhost:3005/kasses/add';
+// const server_url = 'https://khazran-test-server.herokuapp.com/add';
 module.exports = {
     db_settings,
     php_log,
