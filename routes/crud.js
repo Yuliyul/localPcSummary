@@ -12,14 +12,14 @@ router.get('/', async (req, res) => {
     }
     run();
 });
-router.get('/ff', async (req, res) => {
-    process.ffVersion = Bowser.parse(req.headers['user-agent']);
-    res.sendStatus(200);
-});
-router.get('/ch', async (req, res) => {
-    process.chVersion = Bowser.parse(req.headers['user-agent']);
-    res.sendStatus(200);
-});
+// router.get('/ff', async (req, res) => {
+//     process.ffVersion = Bowser.parse(req.headers['user-agent']);
+//     res.sendStatus(200);
+// });
+// router.get('/ch', async (req, res) => {
+//     process.chVersion = Bowser.parse(req.headers['user-agent']);
+//     res.sendStatus(200);
+// });
 router.post('/restart', async (req, res) => {
     var child = require('child_process').exec(
         'shutdown -r',

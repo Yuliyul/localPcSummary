@@ -1,8 +1,12 @@
 const fs = require('fs');
+const path = require('path');
+const conf = JSON.parse(fs.readFileSync('C:/localmachine/conf.json', 'utf8'));
 const readline = require('readline');
 const Stream = require('stream');
-const { db_settings, php_log, fiscal_log, terminal_log } = require('../config');
-
+// const { db_settings, php_log, fiscal_log, terminal_log } = require('../config');
+const php_log = conf.php_log;
+const fiscal_log = conf.fiscal_log;
+const terminal_log = conf.terminal_log;
 function getLastLine(logtype) {
     var fileName = '';
     switch (logtype) {
@@ -55,6 +59,8 @@ function getLastLine(logtype) {
             console.error(error.message || error.stack);
             reject(error);
         }
+    }).catch((error) => {
+        console.log('caught', error.message);
     });
 }
 module.exports.getLastLine = getLastLine;

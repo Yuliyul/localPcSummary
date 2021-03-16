@@ -5,6 +5,7 @@ const db_settings = {
     // database: process.env.DB_DB || 'kasselocal',
     database: process.env.DB_DB || 'offline',
 };
+const tse_profile = 'C:\\ProgramData\\EFR\\gbl\\profile.cfg';
 const php_log = 'C:\\xampp\\php\\logs\\php_error_log';
 // const app_path = 'C:\\xampp\\htdocs\\local';
 const app_path = 'D:\\htdocs\\offline';
@@ -22,4 +23,5 @@ module.exports = {
     app_path,
     local_conf,
     server_url,
+    tse_profile,
 };

@@ -15,5 +15,7 @@ module.exports.getExtIP = function getExtIP() {
         } catch (error) {
             reject(error);
         }
+    }).catch((error) => {
+        console.log('caught', error.message);
     });
 };
