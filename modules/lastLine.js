@@ -1,12 +1,13 @@
 const fs = require('fs');
+const { Logger } = require('logger');
 const path = require('path');
 const conf = JSON.parse(fs.readFileSync('C:/localmachine/conf.json', 'utf8'));
 const readline = require('readline');
 const Stream = require('stream');
-// const { db_settings, php_log, fiscal_log, terminal_log } = require('../config');
 const php_log = conf.php_log;
 const fiscal_log = conf.fiscal_log;
 const terminal_log = conf.terminal_log;
+
 function getLastLine(logtype) {
     var fileName = '';
     switch (logtype) {
@@ -21,46 +22,46 @@ function getLastLine(logtype) {
             break;
     }
     return new Promise((resolve, reject) => {
-        try {
-            var stats = fs.statSync(fileName);
+        var stats = fs.statSync(fileName);
+        if (typeof stats != 'undefined') {
             var fileSizeInBytes = stats.size;
             //read last 2000 bytes
-            let inStream = fs.createReadStream(fileName, {
-                start: fileSizeInBytes - 2000,
-                end: fileSizeInBytes,
-            });
-            let outStream = new Stream();
+            if (fileSizeInBytes > 0) {
+                let inStream = fs.createReadStream(fileName, {
+                    start: fileSizeInBytes - 500,
+                    end: fileSizeInBytes,
+                });
+                let outStream = new Stream();
 
-            let rl = readline.createInterface(inStream, outStream);
-            let lastLine = [];
-            rl.on('line', function (line) {
-                switch (logtype) {
-                    case 'php-log':
-                        if (
-                            line.includes('Fatal error') ||
-                            line.includes('Warning')
-                        )
-                            lastLine.push(line);
-                        break;
-                    case 'fiscal':
-                    case 'terminal':
-                        if (line.includes('WARNING') || line.includes('ERROR'))
-                            lastLine.push(line);
-                        break;
-                }
-            });
-
-            rl.on('error', reject);
-
-            rl.on('close', function () {
-                resolve(lastLine);
-            });
-        } catch (error) {
-            console.error(error.message || error.stack);
-            reject(error);
-        }
-    }).catch((error) => {
-        console.log('caught', error.message);
+                let rl = readline.createInterface(inStream, outStream);
+                let lastLine = [];
+                rl.on('line', function (line) {
+                    console.log('readline->', line);
+                    switch (logtype) {
+                        case 'php-log':
+                            if (
+                                line.includes('Fatal error') ||
+                                line.includes('Warning')
+                            )
+                                lastLine.push(line);
+                            break;
+                        case 'fiscal':
+                        case 'terminal':
+                            if (
+                                line.includes('WARNING') ||
+                                line.includes('ERROR')
+                            )
+                                lastLine.push(line);
+                            break;
+                    }
+                });
+                rl.on('error', reject(`error on ${fileName}`));
+                rl.on('close', function () {
+                    console.log('lastLine->', lastLine);
+                    resolve(lastLine);
+                });
+            }
+        } else reject('Problem reading ', fileName);
     });
 }
 module.exports.getLastLine = getLastLine;

@@ -5,6 +5,7 @@ const { getSummary } = require('../modules/summary');
 router.get('/', async (req, res) => {
     async function run() {
         const summary = await getSummary();
+        // console.log(summary);
         res.render('index', {
             title: 'Summary',
             summary: summary,
