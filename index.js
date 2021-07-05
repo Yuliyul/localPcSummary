@@ -8,7 +8,7 @@ const pino = require('pino');
 const expressPino = require('express-pino-logger');
 
 const logger = pino(
-    { level: process.env.LOG_LEVEL || 'info' },
+    { level: process.env.LOG_LEVEL || 'error' },
     pino.destination('C:/localmachine/error.log')
 );
 const expressLogger = expressPino({ logger });
@@ -58,7 +58,7 @@ logger.info(`start logging`);
 fs.writeFileSync('C:/localmachine/pid.txt', process.pid.toString());
 async function mainCode() {
     const summary = await getSummary();
-    // console.log(summary);
+    console.log(summary);
     var data = qs.stringify(summary);
     var postConfig = {
         method: 'post',

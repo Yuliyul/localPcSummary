@@ -1,8 +1,13 @@
 const NetworkSpeed = require('network-speed'); // ES5
+const fs = require('fs');
+const conf = JSON.parse(fs.readFileSync('C:/localmachine/conf.json', 'utf8'));
+const downurl =
+    conf.downurl + '/kasses/downspeed' ||
+    'http://eu.httpbin.org/stream-bytes/50000000';
 const testNetworkSpeed = new NetworkSpeed();
 
 async function getNetworkDownloadSpeed() {
-    const baseUrl = 'http://eu.httpbin.org/stream-bytes/50000000';
+    const baseUrl = downurl;
     const fileSizeInBytes = 50000000;
     try {
         const speed = await testNetworkSpeed
@@ -21,9 +26,10 @@ async function getNetworkDownloadSpeed() {
 
 async function getNetworkUploadSpeed() {
     const options = {
-        hostname: 'www.google.com',
-        port: 80,
-        path: '/catchers/544b09b4599c1d0200000289',
+        // hostname: 'localhost:3005',
+        hostname: 'https://service-portal-be.hosting7-p.tn-rechenzentrum1.de',
+        // port: 443,
+        path: '/kasses/upspeed',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -34,8 +40,10 @@ async function getNetworkUploadSpeed() {
         const speed = await testNetworkSpeed
             .checkUploadSpeed(options, fileSizeInBytes)
             .catch((error) => {
-                console.log('testNetworkSpeed', error.message || error.stack);
+                console.log('checkUploadSpeed', error.message || error.stack);
             });
+        console.log('Uploadspeed');
+        console.log(speed);
         return speed;
     } catch (error) {
         console.log(console.error(error.message || error.stack));
